@@ -1,5 +1,5 @@
 import { createCanvas, loadImage } from 'canvas';
-import { cutText, roundImage } from '../utils';
+import { cutText, hexToRgb, roundImage } from '../utils';
 import { join } from 'path';
 import * as fs from 'fs';
 
@@ -55,7 +55,9 @@ export default async function Issue(req, res) {
     ctx.closePath();
     ctx.fill();
 
-    ctx.fillStyle = '#FFF';
+    const colorRGB = hexToRgb(color);
+
+    ctx.fillStyle = (colorRGB.r + colorRGB.g + colorRGB.b) / 3 > 255 /2 ? '#000' : '#FFF';
     ctx.fillText(name, nextLabelX + 15 / 2, nextLabelY + 22);
 
     nextLabelX += width + 10;
