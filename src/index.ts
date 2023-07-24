@@ -4,6 +4,7 @@ import * as express from 'express';
 import * as bp from 'body-parser';
 import 'dotenv/config';
 import Push from './events/push';
+import Issue from './events/issue';
 
 registerFont(join(__dirname, 'assets', 'Lato-Black.ttf'), { family: 'Lato-Bold', style: 'bold', weight: 'bold' });
 registerFont(join(__dirname, 'assets', 'Lato-Regular.ttf'), { family: 'Lato', style: 'normal', weight: 'normal' });
@@ -15,6 +16,8 @@ app.post('/wh', bp.json(), async (req: express.Request, res: express.Response) =
 
   if (event === 'push') {
     await Push(req, res);
+  } else if (event === 'issues') {
+    await Issue(req, res);
   }
 
   res

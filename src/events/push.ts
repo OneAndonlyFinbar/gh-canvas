@@ -100,7 +100,6 @@ export default async function Push(req, res) {
 
   const date = new Date(commit.author.date);
   const dateString = `${date.toLocaleString('en-us', { month: 'long' })} ${date.getDate()}, ${date.getFullYear()}`;
-  const dateStringWidth = ctx.measureText(dateString).width;
 
   ctx.fillStyle = '#586069';
   ctx.font = '25px Lato';
