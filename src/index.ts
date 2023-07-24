@@ -13,8 +13,9 @@ registerFont(join(__dirname, 'assets', 'Lato-Regular.ttf'), { family: 'Lato', st
 
 const app = express();
 
-const cutText = (ctx, text: string, width: number) => {
-  text = text.split('\n')[0];
+const cutText = (ctx, text: string, maxWidth: number) => {
+  text = text.replace(/\n\n/g, ' ');
+  text = text.replace(/\r\n/g, ' ');
   const words = text.split(' ');
   const lines = [];
   let currentLine = words[0];
@@ -22,7 +23,7 @@ const cutText = (ctx, text: string, width: number) => {
   for (let i = 1; i < words.length; i++) {
     const word = words[i];
     const width = ctx.measureText(currentLine + ' ' + word).width;
-    if (width < 630) {
+    if (width < maxWidth) {
       currentLine += ' ' + word;
     } else {
       if (lines.length < 2) {
@@ -101,7 +102,7 @@ app.post('/wh', bp.json(), async (req: express.Request, res: express.Response) =
     });
 
     const img = await loadImage(join(__dirname, 'assets', 'changed-file-icon.png'));
-    ctx.drawImage(img, 70, 140 + lines.length * 50, 24, 28);
+    ctx.drawImage(img, 70, 120 + lines.length * 50, 24, 28);
 
     ctx.font = '25px Lato';
     const linesChangedString = `${stats.total} ${stats.total === 1 ? 'Line' : 'Lines'} changed`;
@@ -116,18 +117,18 @@ app.post('/wh', bp.json(), async (req: express.Request, res: express.Response) =
 
     ctx.fillStyle = '#6e7681';
     ctx.font = '25px Lato';
-    ctx.fillText(linesChangedString, 70 + 24 + 10, 140 + lines.length * 50 + 25);
+    ctx.fillText(linesChangedString, 70 + 24 + 10, 120 + lines.length * 50 + 25);
 
     ctx.fillStyle = '#22863a';
     ctx.font = '25px Lato-Bold';
-    ctx.fillText(linesAddedString, 70 + 24 + 10 + linesChangedWidth + 15, 140 + lines.length * 50 + 25);
+    ctx.fillText(linesAddedString, 70 + 24 + 10 + linesChangedWidth + 15, 120 + lines.length * 50 + 25);
 
     ctx.fillStyle = '#cb2431';
-    ctx.fillText(linesRemovedString, 70 + 24 + 10 + linesChangedWidth + 15 + linesAddedWidth + 15, 140 + lines.length * 50 + 25);
+    ctx.fillText(linesRemovedString, 70 + 24 + 10 + linesChangedWidth + 15 + linesAddedWidth + 15, 120 + lines.length * 50 + 25);
 
     let additionPercentage = Math.round(stats.additions / stats.total * 100);
     const percentageStartX = 70 + 24 + 10 + linesChangedWidth + 15 + linesAddedWidth + 15 + linesRemovedWidth + 15;
-    const percentageStartY = 140 + lines.length * 50 + 25 - 20;
+    const percentageStartY = 120 + lines.length * 50 + 25 - 20;
 
     for (let i = 0; i < 5; i++) {
       if (additionPercentage >= 20) {
