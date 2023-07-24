@@ -2,7 +2,7 @@ import { createCanvas, loadImage } from 'canvas';
 import { cutText, roundImage } from '../utils';
 import { join } from 'path';
 import * as fs from 'fs';
-import axios from 'axios';
+
 const GithubColors = require('github-colors');
 
 export default async function Issue(req, res) {
@@ -24,6 +24,42 @@ export default async function Issue(req, res) {
   lines.forEach((line, index) => {
     ctx.fillText(line, 70, 140 + (index * 50));
   });
+
+  const { labels } = issue;
+
+  ctx.font = '20px Lato';
+
+  let nextLabelX = 70;
+  let nextLabelY = 300;
+
+  for (let i = 0; i < labels.length; i++) {
+    const label = labels[i];
+    const { name, color } = label;
+
+    const width = ctx.measureText(name).width + 30;
+    const height = 30;
+
+    if (nextLabelX + width > 1000) {
+      if(nextLabelY + height > 500 - 20 - 90) break;
+      nextLabelX = 70;
+      nextLabelY += height + 10;
+    }
+
+    ctx.fillStyle = `#${color}`;
+
+    ctx.beginPath();
+    ctx.moveTo(nextLabelX, nextLabelY);
+    ctx.lineTo(nextLabelX + width, nextLabelY);
+    ctx.lineTo(nextLabelX + width - 10, nextLabelY + height);
+    ctx.lineTo(nextLabelX - 10, nextLabelY + height);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = '#FFF';
+    ctx.fillText(name, nextLabelX + 15 / 2, nextLabelY + 22);
+
+    nextLabelX += width + 10;
+  }
 
   const profilePicture = await loadImage(issue.user.avatar_url);
   ctx.drawImage(roundImage(profilePicture, profilePicture.width), 70, 500 - 20 - 90, 50, 50);
